@@ -1,20 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React JavaScript WebApp</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
-  </head>
-      <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-      // Αρχικοποίηση του DevTools στο κινητό
-      eruda.init();
-    </script>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Simple React App</title>
+
+  <!-- React CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel για να γράφεις JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [count, setCount] = useState(0);
+
+      return (
+        <div className="card">
+          <h1>Simple React App 🚀</h1>
+          <p>Counter: {count}</p>
+
+          <button onClick={() => setCount(count + 1)}>
+            +1
+          </button>
+
+          <button onClick={() => setCount(0)}>
+            Reset
+          </button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+
+</body>
 </html>
