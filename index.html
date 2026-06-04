@@ -1,39 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Simple React App</title>
+import { useState } from 'react';
+import { Truck, Wrench, PlusCircle, LayoutDashboard } from 'lucide-react';
+import VehicleList from './VehicleList';
+import AddVehicle from './AddVehicle';
+import VehicleDetail from './VehicleDetail';
+import ServiceList from './ServiceList';
 
-  <!-- React CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+export default function App() {
+  // Διαχείριση πλοήγησης: 'list' | 'add' | 'detail' | 'services'
+  const [currentView, setCurrentView] = useState('list');
+  // Αποθήκευση του ID του οχήματος για την προβολή λεπτομερειών
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
-  <!-- Babel για να γράφεις JSX -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  // Συναρτήσεις πλοήγησης για εύκολη χρήση
+  function navigateToList() {
+    setSelectedVehicleId(null);
+    setCurrentView('list');
+  }
 
-  <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      padding: 20px;
-    }
-    .card {
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      max-width: 400px;
-    }
-    button {
-      padding: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-  </style>
-</head>
+  function navigateToDetail(id) {
+    setSelectedVehicleId(id);
+    setCurrentView('detail');
+  }
 
-<body>
+  function navigateToAdd() {
+    setCurrentView('add');
+  }
 
+  function navigateToServices() {
+    setCurrentView('services');
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row font-sans text-slate-800 antialiased">
+      
+      {/* Sidebar Πλοήγησης - Προσαρμόσιμο για Κινητά */}
+      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 shadow-xl border-r border-slate-800">
+        <div className="p-5 border-b border-slate-800 flex items-center gap-3 bg-slate-950">
+          <div className="p-2 bg-blue-600 rounded-lg text-white">
+            <Truck size={20} />
+          </div>
+          <div>
+            <h1 className="font-bold text-base tracking-wide text-white">KiniseosManager</h1>
+            <p className="text-slate-400 text-xs">Διαχείριση Στόλου</p>
+          </div>
+        </div>
+
+        <nav className="flex-1 p-4 space-y-1.5 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
+          <button
+            onClick={navigateToList}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              currentView === 'list' || currentView === 'detail'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+            }`}
+          >
+            <LayoutDashboard size={18} />
+            <span className="whitespace-nowrap">Οχήματα</span>
+          </button>
+
+          <button
+            onClick={navigateToServices}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              currentView === 'services'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+            }`}
+          >
+            <Wrench size={18} />
+            <span className="whitespace-nowrap">Συντηρήσεις</span>
+          </button>
+
+          <button
+            onClick={navigateToAdd}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              currentView === 'add'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+            }`}
+          >
+            <PlusCircle size={18} />
+            <span className="whitespace-nowrap">Νέο Όχημα</span>
+          </button>
+        </nav>
+
+        <div className="p-4 border-t border-slate-800 text-center text-xs text-slate-500 hidden md:block bg-slate-950/40">
+          v1.1.0 — Στρατιωτική Έκδοση
+        </div>
+      </aside>
+
+      {/* Κύριο Περιεχόμενο Εφαρμογής */}
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+        <div className="animate-fadeIn">
+          {currentView === 'list' && (
+            <VehicleList 
+              onViewVehicle={navigateToDetail} 
+              onAddVehicle={navigateToAdd} 
+            />
+          )}
+
+          {currentView === 'add' && (
+            <AddVehicle 
+              onSaved={navigateToList} 
+              onCancel={navigateToList} 
+            />
+          )}
+
+          {currentView === 'detail' && (
+            <VehicleDetail 
+              vehicleId={selectedVehicleId} 
+              onBack={navigateToList} 
+              onDeleted={navigateToList} 
+            />
+          )}
+
+          {currentView === 'services' && (
+            <ServiceList 
+              onBack={navigateToList} 
+            />
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
   <div id="root"></div>
 
   <script type="text/babel">
