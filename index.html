@@ -1,155 +1,173 @@
-import { useState } from 'react';
-import { Truck, Wrench, PlusCircle, LayoutDashboard } from 'lucide-react';
-import VehicleList from './VehicleList';
-import AddVehicle from './AddVehicle';
-import VehicleDetail from './VehicleDetail';
-import ServiceList from './ServiceList';
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KiniseosManager — Διαχείριση Στόλου</title>
 
-export default function App() {
-  // Διαχείριση πλοήγησης: 'list' | 'add' | 'detail' | 'services'
-  const [currentView, setCurrentView] = useState('list');
-  // Αποθήκευση του ID του οχήματος για την προβολή λεπτομερειών
-  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  // Συναρτήσεις πλοήγησης για εύκολη χρήση
-  function navigateToList() {
-    setSelectedVehicleId(null);
-    setCurrentView('list');
-  }
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 
-  function navigateToDetail(id) {
-    setSelectedVehicleId(id);
-    setCurrentView('detail');
-  }
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  function navigateToAdd() {
-    setCurrentView('add');
-  }
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-  function navigateToServices() {
-    setCurrentView('services');
-  }
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-  return (
-    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row font-sans text-slate-800 antialiased">
-      
-      {/* Sidebar Πλοήγησης - Προσαρμόσιμο για Κινητά */}
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 shadow-xl border-r border-slate-800">
-        <div className="p-5 border-b border-slate-800 flex items-center gap-3 bg-slate-950">
-          <div className="p-2 bg-blue-600 rounded-lg text-white">
-            <Truck size={20} />
-          </div>
-          <div>
-            <h1 className="font-bold text-base tracking-wide text-white">KiniseosManager</h1>
-            <p className="text-slate-400 text-xs">Διαχείριση Στόλου</p>
-          </div>
-        </div>
+  <style>
+    /* Εδώ μπορείς να προσθέσεις custom classes αν χρειαστεί, π.χ. για animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
 
-        <nav className="flex-1 p-4 space-y-1.5 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
-          <button
-            onClick={navigateToList}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              currentView === 'list' || currentView === 'detail'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-            }`}
-          >
-            <LayoutDashboard size={18} />
-            <span className="whitespace-nowrap">Οχήματα</span>
-          </button>
-
-          <button
-            onClick={navigateToServices}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              currentView === 'services'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-            }`}
-          >
-            <Wrench size={18} />
-            <span className="whitespace-nowrap">Συντηρήσεις</span>
-          </button>
-
-          <button
-            onClick={navigateToAdd}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              currentView === 'add'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 font-semibold'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-            }`}
-          >
-            <PlusCircle size={18} />
-            <span className="whitespace-nowrap">Νέο Όχημα</span>
-          </button>
-        </nav>
-
-        <div className="p-4 border-t border-slate-800 text-center text-xs text-slate-500 hidden md:block bg-slate-950/40">
-          v1.1.0 — Στρατιωτική Έκδοση
-        </div>
-      </aside>
-
-      {/* Κύριο Περιεχόμενο Εφαρμογής */}
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
-        <div className="animate-fadeIn">
-          {currentView === 'list' && (
-            <VehicleList 
-              onViewVehicle={navigateToDetail} 
-              onAddVehicle={navigateToAdd} 
-            />
-          )}
-
-          {currentView === 'add' && (
-            <AddVehicle 
-              onSaved={navigateToList} 
-              onCancel={navigateToList} 
-            />
-          )}
-
-          {currentView === 'detail' && (
-            <VehicleDetail 
-              vehicleId={selectedVehicleId} 
-              onBack={navigateToList} 
-              onDeleted={navigateToList} 
-            />
-          )}
-
-          {currentView === 'services' && (
-            <ServiceList 
-              onBack={navigateToList} 
-            />
-          )}
-        </div>
-      </main>
-    </div>
-  );
-}
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useRef } = React;
 
-    function App() {
-      const [count, setCount] = useState(0);
+    // --- 0. ΣΥΝΔΕΣΗ ΜΕ SUPABASE ---
+    // Αντικατάστησε τα παρακάτω με τα δικά σου πραγματικά URL και Key από το project σου στη Supabase
+    const SUPABASE_URL = "https://normavqmwvvihbaibggj.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_MnWmrENJ0WyoAXce7jVPWA_XO1wdfQO";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+
+    // --- 1. COMPONENT: VEHICLE LIST (Κώδικας από το VehicleList.jsx) ---
+    function VehicleList({ onViewVehicle, onAddVehicle }) {
+      // Εδώ βάζεις αυτούσιο τον κώδικα που έχεις μέσα στο αρχείο VehicleList.jsx
+      // (Κρατάς μόνο το σώμα της συνάρτησης, χωρίς το "export default")
       return (
-        <div className="card">
-          <h1>Simple React App 🚀</h1>
-          <p>Counter: {count}</p>
-
-          <button onClick={() => setCount(count + 1)}>
-            +1
-          </button>
-
-          <button onClick={() => setCount(0)}>
-            Reset
-          </button>
+        <div className="card p-6 bg-white rounded-xl shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Στόλος Οχημάτων</h2>
+            <button onClick={onAddVehicle} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+              + Προσθήκη
+            </button>
+          </div>
+          <p className="text-sm text-slate-500">Η λίστα των οχημάτων φορτώνει από τη Supabase...</p>
+          {/* Αντικατάστησε αυτό το placeholder με το κανονικό σου UI (Table/Cards) από το VehicleList.jsx */}
         </div>
       );
     }
 
+
+    // --- 2. COMPONENT: ADD VEHICLE (Κώδικας από το AddVehicle.jsx) ---
+    function AddVehicle({ onSaved, onCancel }) {
+      // Εδώ βάζεις αυτούσιο τον κώδικα από το AddVehicle.jsx για τη φόρμα και τις φωτογραφίες
+      return (
+        <div className="card p-6 bg-white rounded-xl shadow-sm">
+          <h2 className="text-xl font-bold mb-4">Προσθήκη Νέου Οχήματος</h2>
+          <p className="text-sm text-slate-500 mb-4">Φόρμα εισαγωγής στοιχείων και ανέβασμα φωτό από το κινητό.</p>
+          <div className="flex gap-3 justify-end mt-6">
+            <button onClick={onCancel} className="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Ακύρωση</button>
+            <button onClick={onSaved} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Αποθήκευση</button>
+          </div>
+        </div>
+      );
+    }
+
+
+    // --- 3. COMPONENT: VEHICLE DETAIL (Κώδικας από το VehicleDetail.jsx) ---
+    function VehicleDetail({ vehicleId, onBack, onDeleted }) {
+      // Εδώ βάζεις αυτούσιο τον κώδικα από το VehicleDetail.jsx
+      return (
+        <div className="card p-6 bg-white rounded-xl shadow-sm">
+          <button onClick={onBack} className="text-sm text-blue-600 hover:underline mb-4">← Επιστροφή</button>
+          <h2 className="text-xl font-bold">Λεπτομέρειες Οχήματος (ID: {vehicleId})</h2>
+        </div>
+      );
+    }
+
+
+    // --- 4. COMPONENT: SERVICE LIST (Κώδικας από το ServiceList.jsx) ---
+    function ServiceList({ onBack }) {
+      // Εδώ βάζεις αυτούσιο τον κώδικα από το ServiceList.jsx (Ημερομηνίες Σέρβις)
+      return (
+        <div className="card p-6 bg-white rounded-xl shadow-sm">
+          <h2 className="text-xl font-bold mb-4">Προγραμματισμένα Σέρβις & Συντηρήσεις</h2>
+          <p className="text-sm text-slate-500">Λίστα ημερομηνιών συντήρησης ανά όχημα.</p>
+        </div>
+      );
+    }
+
+
+    // --- 5. ΚΕΝΤΡΙΚΟ COMPONENT: APP (Το Index / Navigation Shell) ---
+    function App() {
+      const [currentView, setCurrentView] = useState('list');
+      const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
+      function navigateToList() { setSelectedVehicleId(null); setCurrentView('list'); }
+      function navigateToDetail(id) { setSelectedVehicleId(id); setCurrentView('detail'); }
+      function navigateToAdd() { setCurrentView('add'); }
+      function navigateToServices() { setCurrentView('services'); }
+
+      return (
+        <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row font-sans text-slate-800 antialiased">
+          
+          {/* Sidebar */}
+          <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 shadow-xl border-r border-slate-800">
+            <div className="p-5 border-b border-slate-800 flex items-center gap-3 bg-slate-950">
+              <div className="p-2 bg-blue-600 rounded-lg text-white">
+                <i data-lucide="truck" className="w-5 h-5"></i>
+              </div>
+              <div>
+                <h1 className="font-bold text-base tracking-wide text-white">KiniseosManager</h1>
+                <p className="text-slate-400 text-xs">Διαχείριση Στόλου</p>
+              </div>
+            </div>
+
+            <nav className="flex-1 p-4 space-y-1.5 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
+              <button onClick={navigateToList} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${currentView === 'list' || currentView === 'detail' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+                <i data-lucide="layout-dashboard" className="w-4 h-4"></i>
+                <span className="whitespace-nowrap">Οχήματα</span>
+              </button>
+
+              <button onClick={navigateToServices} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${currentView === 'services' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+                <i data-lucide="wrench" className="w-4 h-4"></i>
+                <span className="whitespace-nowrap">Συντηρήσεις</span>
+              </button>
+
+              <button onClick={navigateToAdd} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${currentView === 'add' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+                <i data-lucide="plus-circle" className="w-4 h-4"></i>
+                <span className="whitespace-nowrap">Νέο Όχημα</span>
+              </button>
+            </nav>
+
+            <div className="p-4 border-t border-slate-800 text-center text-xs text-slate-500 hidden md:block bg-slate-950/40">
+              v1.1.0 — Στρατιωτική Έκδοση
+            </div>
+          </aside>
+
+          {/* Κύριο Περιεχόμενο */}
+          <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+            <div className="animate-fadeIn">
+              {currentView === 'list' && <VehicleList onViewVehicle={navigateToDetail} onAddVehicle={navigateToAdd} />}
+              {currentView === 'add' && <AddVehicle onSaved={navigateToList} onCancel={navigateToList} />}
+              {currentView === 'detail' && <VehicleDetail vehicleId={selectedVehicleId} onBack={navigateToList} onDeleted={navigateToList} />}
+              {currentView === 'services' && <ServiceList onBack={navigateToList} />}
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    // --- 6. RENDER ΚΑΙ ΕΝΕΡΓΟΠΟΙΗΣΗ ΕΙΚΟΝΙΔΙΩΝ ---
     const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(<App />);
-  </script>
 
+    // Απαραίτητο βήμα για να διαβάσει η βιβλιοθήκη lucide τα tag <i data-lucide="...">
+    setTimeout(() => {
+      lucide.createIcons();
+    }, 100);
+  </script>
 </body>
 </html>
