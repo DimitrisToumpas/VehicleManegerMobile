@@ -1,5 +1,5 @@
 /*
-  # Add Vehicle Service Tracking
+  # Add Vehicle Service Tracking & Vehicle Brand
 
   1. New Table
     - `vehicle_services`
@@ -15,12 +15,15 @@
       - `created_at` (timestamptz)
 
   2. Modified Tables
-    - `vehicles` - add next_service_date and next_service_kilometers fields
+    - `vehicles` 
+      - add next_service_date and next_service_kilometers fields
+      - add marka field (vehicle brand)
 
   3. Security
     - RLS disabled (public app)
 */
 
+-- 1. Δημιουργία του πίνακα vehicle_services
 CREATE TABLE IF NOT EXISTS vehicle_services (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id uuid NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
@@ -34,8 +37,10 @@ CREATE TABLE IF NOT EXISTS vehicle_services (
   created_at timestamptz DEFAULT now()
 );
 
+-- 2. Τροποποίηση του πίνακα vehicles (Προσθήκη service info και μάρκας)
 DO $$
 BEGIN
+  -- Προσθήκη ημερομηνίας επόμενου σέρβις
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_name = 'vehicles' AND column_name = 'next_service_date'
@@ -43,8 +48,20 @@ BEGIN
     ALTER TABLE vehicles ADD COLUMN next_service_date date;
     ALTER TABLE vehicles ADD COLUMN next_service_kilometers integer;
   END IF;
+
+  -- Προσθήκη της μάρκας του οχήματος
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'vehicles' AND column_name = 'marka'
+  ) THEN
+    ALTER TABLE vehicles ADD COLUMN marka text NOT NULL DEFAULT '';
+  END IF;
 END $$;
 
+-- 3. Δημιουργία Ευρετηρίων (Indexes) για καλύτερη απόδοση
+CREATE TABLE IF NOT EXISTS vehicle_services_vehicle_id_idx; -- Just double checking structure
 CREATE INDEX IF NOT EXISTS vehicle_services_vehicle_id_idx ON vehicle_services(vehicle_id);
 CREATE INDEX IF NOT EXISTS vehicle_services_completed_idx ON vehicle_services(completed);
 CREATE INDEX IF NOT EXISTS vehicles_next_service_date_idx ON vehicles(next_service_date);
+-- Προαιρετικό index αν ψάχνεις/φιλτράρεις συχνά με βάση τη μάρκα:
+CREATE INDEX IF NOT EXISTS vehicles_marka_idx ON vehicles(marka);
