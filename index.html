@@ -179,7 +179,7 @@
 
       const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.plate_number || !formData.brand || !formData.model || !formData.category) {
+        if (!formData.plate_number || !formData.marka || !formData.model || !formData.category) {
           alert("Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία.");
           return;
         }
@@ -191,7 +191,7 @@
             .from('vehicles')
             .insert([{
               plate_number: formData.plate_number.toUpperCase().trim(),
-              brand: formData.brand,
+              marka: formData.marka,
               model: formData.model.trim(),
               category: formData.category,
               status: formData.status,
